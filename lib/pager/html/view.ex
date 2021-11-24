@@ -3,15 +3,18 @@ defmodule Pager.HTML.View do
     root: "lib/pager/html/templates",
     namespace: Pager.HTML
 
-  def link_or_text(%{active?: true, text: text}, _path), do: text
-  def link_or_text(%{disabled?: true, text: text}, _path), do: text
-  def link_or_text(%{type: type, text: text}, _path) when type not in [:page], do: text
+  def page_link(page, path) do
+    %{type: type, text: text, states: states, number: number} = page
 
-  def link_or_text(%{type: :page} = page, path) do
-    Phoenix.HTML.Link.link(page.text, to: "#{path}?page=#{page.number}")
+    cond do
+      :active in states -> text
+      :disabled in states -> text
+      type == :ellipsis -> text
+      true -> Phoenix.HTML.Link.link(text, to: "#{path}?page=#{number}")
+    end
   end
 
-  def page_classes(%{type: type, states: states}) do
-    String.trim("#{type} #{Enum.join(states, "")}")
+  def page_class(%{type: type, states: states}) do
+    String.trim("#{type} #{Enum.join(states, " ")}")
   end
 end

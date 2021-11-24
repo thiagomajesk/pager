@@ -1,7 +1,7 @@
 <nav class="pagination">
   <%= for page <- @pages do %>
-    <span class="<%= page_classes(page) %>">
-      <%= link_or_text(page, @path) %>
+    <span class="<%= page_class(page) %>">
+      <%= page_link(page, @path) %>
     </span>
   <% end %>
 </nav>

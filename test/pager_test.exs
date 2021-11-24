@@ -3,7 +3,7 @@ defmodule Pager.PaginatorTest do
 
   import Ecto.Query
 
-  alias Pager.{Repo, User, Paginator, Page}
+  alias Pager.{Repo, User, Page}
 
   doctest Pager
 
