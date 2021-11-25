@@ -6,15 +6,17 @@ defmodule Pager.Paginator do
   def paginate(query, repo, opts) do
     prefix = opts[:prefix]
     padding = opts[:padding]
+    provider = opts[:provider]
     page_size = opts[:page_size]
     page_number = opts[:page_number]
+    without_count = opts[:without_count]
 
     query
     |> limit_query(page_number, page_size, padding)
     |> execute_query(repo, prefix)
-    |> calculate_total(query, repo, prefix)
+    |> calculate_total(query, without_count, repo, prefix)
     |> convert_to_page(page_number, page_size, padding)
-    |> generate_pagination_blueprint()
+    |> generate_pagination_blueprint(provider)
   end
 
   defp limit_query(query, page_number, page_size, _padding) do
@@ -29,41 +31,34 @@ defmodule Pager.Paginator do
     %{items: repo.all(query, prefix: prefix)}
   end
 
-  defp calculate_total(map, query, repo, prefix) do
+  defp calculate_total(map, query, halt, repo, prefix) do
     total =
-      query
-      |> exclude(:preload)
-      |> exclude(:order_by)
-      |> exclude(:select)
-      |> repo.aggregate(:count, prefix: prefix)
+      unless halt do
+        query
+        |> exclude(:preload)
+        |> exclude(:order_by)
+        |> exclude(:select)
+        |> repo.aggregate(:count, prefix: prefix)
+      end
 
     Map.put(map, :total_items, total)
   end
 
   defp convert_to_page(%{items: items, total_items: total_items}, page_number, page_size, padding) do
-    total_pages = total_items && max(1, div(total_items, page_size))
-    next_page = page_number + 1
-    prev_page = page_number - 1
-    first_page? = page_number == 1
-    last_page? = page_number == total_pages
-    out_of_range? = page_number < 1 || page_number > total_pages
-
     %Pager.Page{
       items: items,
       total_items: total_items,
-      total_pages: total_pages,
       current_page: page_number,
       page_size: page_size,
-      padding: padding,
-      next_page: next_page,
-      prev_page: prev_page,
-      first_page?: first_page?,
-      last_page?: last_page?,
-      out_of_range?: out_of_range?
+      padding: padding
     }
   end
 
-  defp generate_pagination_blueprint(page) do
+  defp generate_pagination_blueprint(page, nil) do
     %{page | __blueprint__: Pager.Blueprint.explain(page)}
+  end
+
+  defp generate_pagination_blueprint(page, provider) do
+    %{page | __blueprint__: provider.explain(page)}
   end
 end

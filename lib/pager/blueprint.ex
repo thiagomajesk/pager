@@ -1,4 +1,6 @@
 defmodule Pager.Blueprint do
+  alias Pager.Page
+
   @provider Application.compile_env(:pager, :provider, Pager.Providers.Default)
 
   @type item :: %{
@@ -8,7 +10,7 @@ defmodule Pager.Blueprint do
           states: [:active | :disabled]
         }
 
-  @callback explain(page :: Pager.Page.t(), opts :: keyword()) :: list(item())
+  @callback explain(page :: Page.t(), opts :: keyword()) :: list(item())
 
   defdelegate explain(page), to: @provider
   defdelegate explain(page, opts), to: @provider
@@ -48,7 +50,7 @@ defmodule Pager.Blueprint do
         %{
           type: :first,
           text: "« First",
-          number: 1,
+          number: Page.first_page(page),
           states: map_states(disabled: page.current_page == 1)
         }
       end
@@ -57,7 +59,7 @@ defmodule Pager.Blueprint do
         %{
           type: :prev,
           text: "‹ Prev",
-          number: max(page.current_page - 1, 1),
+          number: Page.prev_page(page),
           states: map_states(disabled: page.current_page == 1)
         }
       end
@@ -66,8 +68,8 @@ defmodule Pager.Blueprint do
         %{
           type: :next,
           text: "Next ›",
-          number: min(page.current_page + 1, page.total_pages),
-          states: map_states(disabled: page.current_page == page.total_pages)
+          number: Page.next_page(page),
+          states: map_states(disabled: page.current_page == Page.total_pages(page))
         }
       end
 
@@ -75,8 +77,8 @@ defmodule Pager.Blueprint do
         %{
           type: :last,
           text: "Last »",
-          number: page.total_pages,
-          states: map_states(disabled: page.current_page == page.total_pages)
+          number: Page.last_page(page),
+          states: map_states(disabled: page.current_page == Page.total_pages(page))
         }
       end
 

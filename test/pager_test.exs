@@ -44,7 +44,7 @@ defmodule Pager.PaginatorTest do
 
   test "page is out of range when page number is greater than what's avaiable to paginate" do
     page = Repo.paginate(from(u in User), %{"page_number" => "3", "page_size" => "14"})
-    assert %Page{current_page: 3, page_size: 14, items: [], out_of_range?: true} = page
+    assert Page.out_of_range?(page)
   end
 
   test "should raise if anything other than a binary or a integer is passed to an option" do
@@ -69,6 +69,20 @@ defmodule Pager.PaginatorTest do
     assert_raise RuntimeError, ~r/Option padding cannot be a negative value/, fn ->
       Repo.paginate(from(u in User), %{"padding" => "-1"})
     end
+  end
+
+  test "witout count option should not emit second query" do
+    defmodule DummyProvider do
+      use Pager.Blueprint
+
+      def explain(page, _opts) do
+        [%{type: :infinite, number: page.current_page + 1, text: "More"}]
+      end
+    end
+
+    page = Repo.paginate(from(u in User), page_number: 2, page_size: 5, without_count: true, provider: DummyProvider)
+    assert %Page{current_page: 2, page_size: 5, items: items, total_items: nil} = page
+    assert Enum.count(items) == 5
   end
 
   defp fixtures do

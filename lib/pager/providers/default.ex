@@ -3,13 +3,13 @@ defmodule Pager.Providers.Default do
   use Pager.Blueprint
 
   def explain(%Pager.Page{} = page, opts) do
-    %{current_page: current_page, total_pages: total_pages} = page
+    total_pages = Pager.Page.total_pages(page)
 
     inner_window = opts[:inner_window] || Application.get_env(:pager, :inner_window, 4)
     outer_window = opts[:outer_window] || Application.get_env(:pager, :outer_window, 0)
 
-    inner_window_start = max(current_page - inner_window, 1)
-    inner_window_end = min(current_page + inner_window, total_pages)
+    inner_window_start = max(page.current_page - inner_window, 1)
+    inner_window_end = min(page.current_page + inner_window, total_pages)
     inner_window_range = inner_window_start..inner_window_end
 
     inner_window =
