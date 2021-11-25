@@ -3,7 +3,12 @@ defmodule Pager.Paginator do
 
   import Ecto.Query, only: [limit: 2, offset: 2, exclude: 2]
 
-  def paginate(query, page_number, page_size, padding, repo, prefix) do
+  def paginate(query, repo, opts) do
+    prefix = opts[:prefix]
+    padding = opts[:padding]
+    page_size = opts[:page_size]
+    page_number = opts[:page_number]
+
     query
     |> limit_query(page_number, page_size, padding)
     |> execute_query(repo, prefix)
@@ -36,9 +41,9 @@ defmodule Pager.Paginator do
   end
 
   defp convert_to_page(%{items: items, total_items: total_items}, page_number, page_size, padding) do
-    total_pages = max(1, div(total_items, page_size))
-    next_page = max(page_number + 1, total_pages)
-    prev_page = min(page_number - 1, 1)
+    total_pages = total_items && max(1, div(total_items, page_size))
+    next_page = page_number + 1
+    prev_page = page_number - 1
     first_page? = page_number == 1
     last_page? = page_number == total_pages
     out_of_range? = page_number < 1 || page_number > total_pages
