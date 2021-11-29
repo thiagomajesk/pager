@@ -24,7 +24,8 @@ defmodule Pager.MixProject do
       {:ecto_sql, "~> 3.7"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.0 or ~> 3.0"},
-      {:phoenix_view, "~> 1.0.0"}
+      {:phoenix_view, "~> 1.0.0"},
+      {:plug, "~> 1.0"},
     ]
   end
 end
