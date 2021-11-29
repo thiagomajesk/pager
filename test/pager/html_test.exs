@@ -68,5 +68,14 @@ defmodule Pager.HTMLTest do
       assert Pager.HTML.last_page_link(conn, page) ==
                Phoenix.HTML.Link.link("Last", to: "/foo?page=2")
     end
+
+    test "pagination params merges with existing path" do
+      conn = conn(:get, "?size=10")
+
+      page = %{type: :page, text: "2", states: [], number: 2}
+
+      assert Pager.HTML.Helpers.page_link(conn, page) ==
+               Phoenix.HTML.Link.link("2", to: "?page=2&size=10")
+    end
   end
 end

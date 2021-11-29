@@ -14,8 +14,14 @@ defmodule Pager.HTML.Helpers do
     String.trim("#{type} #{Enum.join(states, " ")}")
   end
 
-  defp build_link(%Plug.Conn{request_path: path}, %{text: text, number: number}) do
-    params = Plug.Conn.Query.encode(%{"page" => number})
-    Phoenix.HTML.Link.link(text, to: "?#{params}")
+  defp build_link(%Plug.Conn{} = conn, %{text: text, number: number}) do
+    query_string =
+      conn
+      |> Plug.Conn.fetch_query_params()
+      |> Map.get(:query_params)
+      |> Map.put("page", number)
+      |> Plug.Conn.Query.encode()
+
+    Phoenix.HTML.Link.link(text, to: "#{conn.request_path}?#{query_string}")
   end
 end
