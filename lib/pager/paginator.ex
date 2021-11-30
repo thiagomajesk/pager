@@ -3,13 +3,15 @@ defmodule Pager.Paginator do
 
   import Ecto.Query, only: [limit: 2, offset: 2, exclude: 2]
 
-  def paginate(query, repo, opts) do
-    prefix = opts[:prefix]
-    padding = opts[:padding]
-    provider = opts[:provider]
-    page_size = opts[:page_size]
-    page_number = opts[:page_number]
-    without_count = opts[:without_count]
+  def paginate(query, repo, %Pager.Options{} = opts) do
+    %{
+      prefix: prefix,
+      padding: padding,
+      provider: provider,
+      page_size: page_size,
+      page_number: page_number,
+      without_count: without_count
+    } = opts
 
     query
     |> limit_query(page_number, page_size, padding)

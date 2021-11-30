@@ -1,19 +1,32 @@
 defmodule Pager.Options do
-  @moduledoc false
+  defstruct page_number: 1,
+            page_size: 10,
+            padding: 0,
+            provider: nil,
+            prefix: nil,
+            without_count: false
 
-  @default_page_number 1
-  @default_page_size 10
-  @default_padding 0
+  def merge(opts1, opts2) do
+    opts1 = normalize(opts1)
+    opts2 = normalize(opts2)
+    merged = Keyword.merge(opts1, opts2)
+    struct(__MODULE__, merged)
+  end
 
-  def normalize(opts) do
+  def from(opts) do
+    opts = normalize(opts)
+    struct(__MODULE__, opts)
+  end
+
+  defp normalize(opts) do
     (opts || [])
+    |> Enum.to_list()
     |> atomize_keys()
-    |> patch_options()
     |> parse_values()
   end
 
   defp atomize_keys(opts) do
-    Enum.into(opts, [], fn
+    Enum.map(opts, fn
       {k, v} when is_binary(k) ->
         {String.to_existing_atom(k), v}
 
@@ -22,41 +35,31 @@ defmodule Pager.Options do
     end)
   end
 
-  defp patch_options(opts) do
-    opts
-    |> Enum.reject(fn {_, v} -> is_nil(v) end)
-    |> Keyword.put_new(:page_number, @default_page_number)
-    |> Keyword.put_new(:page_size, @default_page_size)
-    |> Keyword.put_new(:padding, @default_padding)
-  end
-
+  # Accepts both standard keys and aliases
   defp parse_values(opts) do
-    Keyword.new(opts, fn
+    Enum.map(opts, fn
       {k, v} when k in [:page_number, :page] ->
-        {:page_number, to_int(k, v)}
+        {:page_number, parse_option(k, v)}
 
       {k, v} when k in [:page_size, :size] ->
-        {:page_size, to_int(k, v)}
+        {:page_size, parse_option(k, v)}
 
       {k, v} when k in [:padding, :skip] ->
-        {:padding, to_int(k, v)}
+        {:padding, parse_option(k, v)}
 
       kv ->
         kv
     end)
   end
 
-  defp to_int(option, value) when is_binary(value),
-    do: check_value(option, String.to_integer(value))
+  defp parse_option(key, value) when is_binary(value),
+    do: parse_option(key, String.to_integer(value))
 
-  defp to_int(option, value) when is_integer(value), do: check_value(option, value)
-  defp to_int(option, value), do: raise("Invalid value #{inspect(value)} for option #{option}")
+  defp parse_option(key, value) when is_integer(value) and value < 0,
+    do: raise("Option #{inspect(key)} cannot be a negative number. Received #{inspect(value)}")
 
-  defp check_value(option, value) do
-    if value < 0 do
-      raise "Option #{option} cannot be a negative value"
-    else
-      value
-    end
-  end
+  defp parse_option(_key, value) when is_integer(value), do: value
+
+  defp parse_option(key, value),
+    do: raise("Invalid value for option #{inspect(key)}. Received #{inspect(value)}")
 end

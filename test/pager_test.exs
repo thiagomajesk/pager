@@ -42,33 +42,22 @@ defmodule Pager.PaginatorTest do
     assert Enum.count(items) == 5
   end
 
+  test "should not touch other params other than the relevant opts" do
+    page = Repo.paginate(from(u in User), %{"page_number" => "2", "page_size" => "5", "foo" => false})
+    assert %Page{current_page: 2, page_size: 5, items: items} = page
+    assert Enum.count(items) == 5
+  end
+
+  test "paginate/2 accepts options struct" do
+    opts = Pager.Options.from(%{"page_number" => "2", "page_size" => "5"})
+    page = Repo.paginate(from(u in User), opts)
+    assert %Page{current_page: 2, page_size: 5, items: items} = page
+    assert Enum.count(items) == 5
+  end
+
   test "page is out of range when page number is greater than what's avaiable to paginate" do
     page = Repo.paginate(from(u in User), %{"page_number" => "3", "page_size" => "14"})
     assert Page.out_of_range?(page)
-  end
-
-  test "should raise if anything other than a binary or a integer is passed to an option" do
-    assert_raise RuntimeError, ~r/Invalid value false for option page_number/, fn ->
-      Repo.paginate(from(u in User), %{"page_number" => false})
-    end
-  end
-
-  test "should raise if page_number is a negative number" do
-    assert_raise RuntimeError, ~r/Option page_number cannot be a negative value/, fn ->
-      Repo.paginate(from(u in User), %{"page_number" => "-1"})
-    end
-  end
-
-  test "should raise if page_size is a negative number" do
-    assert_raise RuntimeError, ~r/Option page_size cannot be a negative value/, fn ->
-      Repo.paginate(from(u in User), %{"page_size" => "-1"})
-    end
-  end
-
-  test "should raise if padding is a negative number" do
-    assert_raise RuntimeError, ~r/Option padding cannot be a negative value/, fn ->
-      Repo.paginate(from(u in User), %{"padding" => "-1"})
-    end
   end
 
   test "witout count option should not emit second query" do
@@ -80,7 +69,14 @@ defmodule Pager.PaginatorTest do
       end
     end
 
-    page = Repo.paginate(from(u in User), page_number: 2, page_size: 5, without_count: true, provider: DummyProvider)
+    page =
+      Repo.paginate(from(u in User),
+        page_number: 2,
+        page_size: 5,
+        without_count: true,
+        provider: DummyProvider
+      )
+
     assert %Page{current_page: 2, page_size: 5, items: items, total_items: nil} = page
     assert Enum.count(items) == 5
   end
