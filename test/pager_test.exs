@@ -81,6 +81,11 @@ defmodule Pager.PaginatorTest do
     assert Enum.count(items) == 5
   end
 
+  test "page has the corrent amount of pages" do
+    page = Repo.paginate(from(u in User), page_number: 1, page_size: 10)
+    assert Pager.Page.total_pages(page) == 2
+  end
+
   defp fixtures do
     [
       %User{name: "Foo"},

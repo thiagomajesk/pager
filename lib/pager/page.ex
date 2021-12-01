@@ -21,7 +21,8 @@ defmodule Pager.Page do
   end
 
   def total_pages(%Page{} = page) do
-    max(1, div(total_items(page), page.page_size))
+    total_pages = total_items(page) / page.page_size
+    max(1, Float.ceil(total_pages) |> trunc())
   end
 
   def first_page(%Page{}), do: 1
