@@ -29,9 +29,13 @@ defmodule Pager.Page do
 
   def last_page(%Page{} = page), do: total_pages(page)
 
+  def next_page!(%Page{} = page), do: max(last_page(page), page.current_page + 1)
+
   def next_page(%Page{} = page), do: page.current_page + 1
 
   def prev_page(%Page{} = page), do: page.current_page - 1
+
+  def prev_page!(%Page{} = page), do: min(first_page(page), page.current_page - 1)
 
   def first_page?(%Page{} = page), do: page.current_page == first_page(page)
 

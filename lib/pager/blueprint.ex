@@ -59,7 +59,7 @@ defmodule Pager.Blueprint do
         %{
           type: :prev,
           text: "‹ Prev",
-          number: Page.prev_page(page),
+          number: Page.prev_page!(page),
           states: map_states(disabled: page.current_page == 1)
         }
       end
@@ -68,7 +68,7 @@ defmodule Pager.Blueprint do
         %{
           type: :next,
           text: "Next ›",
-          number: Page.next_page(page),
+          number: Page.next_page!(page),
           states: map_states(disabled: page.current_page == Page.total_pages(page))
         }
       end

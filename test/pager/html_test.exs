@@ -41,8 +41,22 @@ defmodule Pager.HTMLTest do
       blueprint = [%{type: :prev, text: "Previous", states: [], number: 1}]
       page = %Pager.Page{__blueprint__: blueprint}
 
-      assert Pager.HTML.prev_page_link(conn, page) ==
+      assert Pager.HTML.prev_page_link!(conn, page) ==
                Phoenix.HTML.Link.link("Previous", to: "/foo?page=1")
+    end
+
+    test "using prev_page_link! without blueprint raises", %{conn: conn} do
+      assert_raise RuntimeError, "No prev page blueprint found in []", fn ->
+        page = %Pager.Page{__blueprint__: []}
+        Pager.HTML.prev_page_link!(conn, page)
+      end
+    end
+
+    test "using prev_page_link without blueprint does not raise", %{conn: conn} do
+      page = %Pager.Page{__blueprint__: [], current_page: 2}
+
+      assert Pager.HTML.prev_page_link(conn, page) ==
+               Phoenix.HTML.Link.link("‹ Prev", to: "/foo?page=1")
     end
 
     test "renders first link when page exists", %{conn: conn} do
@@ -57,8 +71,22 @@ defmodule Pager.HTMLTest do
       blueprint = [%{type: :next, text: "Next", states: [], number: 2}]
       page = %Pager.Page{__blueprint__: blueprint}
 
-      assert Pager.HTML.next_page_link(conn, page) ==
+      assert Pager.HTML.next_page_link!(conn, page) ==
                Phoenix.HTML.Link.link("Next", to: "/foo?page=2")
+    end
+
+    test "using next_page_link! without blueprint raises", %{conn: conn} do
+      assert_raise RuntimeError, "No next page blueprint found in []", fn ->
+        page = %Pager.Page{__blueprint__: []}
+        Pager.HTML.next_page_link!(conn, page)
+      end
+    end
+
+    test "using next_page_link without blueprint does not raise", %{conn: conn} do
+      page = %Pager.Page{__blueprint__: [], current_page: 1}
+
+      assert Pager.HTML.next_page_link(conn, page) ==
+               Phoenix.HTML.Link.link("Next ›", to: "/foo?page=2")
     end
 
     test "renders last link when page exists", %{conn: conn} do
