@@ -31,8 +31,8 @@ defmodule Pager.PageTest do
   end
 
   test "out_of_range?/1" do
-    assert Page.out_of_range?(%Page{current_page: 1, total_items: 15, page_size: 5, items: []}) == true
-    assert Page.out_of_range?(%Page{current_page: 1, total_items: 15, page_size: 5, items: []}) == true
+    assert Page.out_of_range?(%Page{current_page: 1, page_size: 5, items: []}) == true
+    assert Page.out_of_range?(%Page{current_page: 1, page_size: 5, items: []}) == true
 
     assert Page.out_of_range?(%Page{current_page: 1, total_items: 15, page_size: 5, items: nil}) == false
     assert Page.out_of_range?(%Page{current_page: 4, total_items: 15, page_size: 5, items: nil}) == true
