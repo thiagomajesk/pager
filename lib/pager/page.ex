@@ -29,21 +29,24 @@ defmodule Pager.Page do
 
   def last_page(%Page{} = page), do: total_pages(page)
 
-  def next_page!(%Page{} = page), do: max(last_page(page), page.current_page + 1)
+  def next_page!(%Page{} = page), do: min(last_page(page), page.current_page + 1)
 
   def next_page(%Page{} = page), do: page.current_page + 1
 
   def prev_page(%Page{} = page), do: page.current_page - 1
 
-  def prev_page!(%Page{} = page), do: min(first_page(page), page.current_page - 1)
+  def prev_page!(%Page{} = page), do: max(first_page(page), page.current_page - 1)
 
   def first_page?(%Page{} = page), do: page.current_page == first_page(page)
 
   def last_page?(%Page{} = page), do: page.current_page == last_page(page)
 
-  # we could also do page_number < 1 || page_number > total_pages
-  # but we don't want to raise when the page is out of range because the total is absent.
-  def out_of_range?(%Page{} = page), do: page.items == []
+  # We could always check the first and last pages but we don't want to
+  # raise for cases where the total number is absent. So we do our best to
+  # identify out of range pages by looking if items are present first.
+  def out_of_range?(%Page{current_page: current_page} = page) do
+    page.items == [] || current_page < first_page(page) || current_page > last_page(page)
+  end
 end
 
 defimpl Enumerable, for: Pager.Page do
