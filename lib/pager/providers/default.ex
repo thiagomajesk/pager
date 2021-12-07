@@ -1,5 +1,6 @@
 defmodule Pager.Providers.Default do
   @moduledoc false
+
   use Pager.Blueprint
 
   def explain(%Pager.Page{} = page, opts) do

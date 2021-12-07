@@ -1,4 +1,9 @@
 defmodule Pager do
+  @moduledoc """
+  Provides the `Pager.paginate/2` function that can be used to paginate records.
+  You should `use` this module in your Repo to make the `paginate/2` fuction available.
+  """
+
   defmacro __using__(opts \\ []) do
     quote do
       @doc """

@@ -1,6 +1,13 @@
 defmodule Pager.HTML.Helpers do
-  @moduledoc false
+  @moduledoc """
+  This module contains helper functions that can be used
+  if you are using a custom view module to render your pagination HTML.
+  """
 
+  @doc """
+  Returns the correct page link if the page is in the correct state.
+  Pages with `:active`, `:disabled` or with the type `:ellipsis` only render text.
+  """
   def page_link(%Plug.Conn{} = conn, page) do
     cond do
       :active in page.states -> page.text
@@ -10,6 +17,9 @@ defmodule Pager.HTML.Helpers do
     end
   end
 
+  @doc """
+  Returns the page classes based on the type and states present.
+  """
   def page_class(%{type: type, states: states}) do
     String.trim("#{type} #{Enum.join(states, " ")}")
   end

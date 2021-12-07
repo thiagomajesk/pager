@@ -1,4 +1,16 @@
 defmodule Pager.Blueprint do
+  @moduledoc """
+  Defines a blueprint provider that can be used in the pagination process.
+  The pagination blueprint is generated to provide agnostic pagination information.
+
+  Most applications should be well served with the out-of-the-box implementations
+  provided by both `Pager.Providers.Default` and `Pager.Providers.Compact`, but if you wish
+  to create your own custom implementation you can do so by implementing this behaviour.
+
+  You can configure the default provider used by the pagination process by setting the
+  `config :pager, provider: MyProvider` or by using the corresponding option with the pagination function.
+  """
+
   alias Pager.Page
 
   @provider Application.compile_env(:pager, :provider, Pager.Providers.Default)

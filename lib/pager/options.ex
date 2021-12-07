@@ -1,4 +1,16 @@
 defmodule Pager.Options do
+  @moduledoc """
+  Define pagination options that can be used with `Pager.paginate/2`.
+
+  ## Options
+
+  - `:page_number` - The current page number, defaults to `1`.
+  - `:page_size` - The number of items per page, defaults to `10`.
+  - `:provider` - The blueprint provider, defaults to `Pager.Providers.Default`.
+  - `:prefix` - The prefix that will be used in the pagination query.
+  - `:without_count` - Whether to skip the count query, defaults to `false`.
+  """
+
   defstruct page_number: 1,
             page_size: 10,
             padding: 0,
@@ -6,6 +18,10 @@ defmodule Pager.Options do
             prefix: nil,
             without_count: false
 
+  @doc """
+  Merges the given pagination options and returns a `%Pager.Options{}` struct.
+  Options will first be normalized, validated and then merged together.
+  """
   def merge(opts1, opts2) do
     opts1 = normalize(opts1)
     opts2 = normalize(opts2)
@@ -13,6 +29,10 @@ defmodule Pager.Options do
     struct(__MODULE__, merged)
   end
 
+  @doc """
+  Converts the given option to a `%Pager.Options{}` struct.
+  This could be very useful if you need to cast the request params, for example.
+  """
   def from(opts) do
     opts = normalize(opts)
     struct(__MODULE__, opts)
