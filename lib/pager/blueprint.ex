@@ -54,7 +54,7 @@ defmodule Pager.Blueprint do
           type: :ellipsis,
           text: "...",
           number: nil,
-          states: []
+          states: [:disabled]
         }
       end
 
