@@ -19,22 +19,25 @@ defmodule Pager.HTMLTest do
                Phoenix.HTML.Link.link("2", to: "/foo?page=2")
     end
 
-    test "ellipsis should not have links", %{conn: conn} do
+    test "ellipsis should have empty links", %{conn: conn} do
       page = %{type: :ellipsis, text: "...", states: [], number: nil}
 
-      assert Pager.HTML.Helpers.page_link(conn, page) == "..."
+      assert Pager.HTML.Helpers.page_link(conn, page) ==
+              Phoenix.HTML.Tag.content_tag(:span, "...")
     end
 
-    test "active pages should not have links", %{conn: conn} do
+    test "active pages should have empty links", %{conn: conn} do
       page = %{type: :page, text: "2", states: [:active], number: 2}
 
-      assert Pager.HTML.Helpers.page_link(conn, page) == "2"
+      assert Pager.HTML.Helpers.page_link(conn, page) ==
+                Phoenix.HTML.Tag.content_tag(:span, "2")
     end
 
-    test "disabled pages should not have links", %{conn: conn} do
+    test "disabled pages should have empty links", %{conn: conn} do
       page = %{type: :page, text: "2", states: [:disabled], number: 2}
 
-      assert Pager.HTML.Helpers.page_link(conn, page) == "2"
+      assert Pager.HTML.Helpers.page_link(conn, page) ==
+                Phoenix.HTML.Tag.content_tag(:span, "2")
     end
 
     test "renders prev link when page exists", %{conn: conn} do

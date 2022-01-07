@@ -10,10 +10,10 @@ defmodule Pager.HTML.Helpers do
   """
   def page_link(%Plug.Conn{} = conn, page, opts \\ []) do
     cond do
-      :active in page.states -> page.text
-      :disabled in page.states -> page.text
-      page.type == :ellipsis -> page.text
-      true -> build_link(conn, page, opts)
+      :active in page.states -> build_span(page, opts)
+      :disabled in page.states -> build_span(page, opts)
+      page.type == :ellipsis -> build_span(page, opts)
+      true -> build_link(page, Keyword.put(opts, :to, build_path(conn, page)))
     end
   end
   
@@ -31,7 +31,7 @@ defmodule Pager.HTML.Helpers do
     String.trim("#{type} #{Enum.join(states, " ")}")
   end
   
-  defp build_link(%Plug.Conn{} = conn, %{text: text, number: number}, opts) do
+  defp build_path(conn, %{number: number}) do
     query_string =
       conn
       |> Plug.Conn.fetch_query_params()
@@ -39,6 +39,14 @@ defmodule Pager.HTML.Helpers do
       |> Map.put("page", number)
       |> Plug.Conn.Query.encode()
       
-    Phoenix.HTML.Link.link(text, Keyword.put(opts, :to, "#{conn.request_path}?#{query_string}"))
+    "#{conn.request_path}?#{query_string}"
+  end
+  
+  defp build_span(%{text: text}, opts) do
+    Phoenix.HTML.Tag.content_tag(:span, text, opts)
+  end
+  
+  defp build_link(%{text: text}, opts) do
+    Phoenix.HTML.Link.link(text, opts)
   end
 end
