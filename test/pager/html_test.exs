@@ -6,12 +6,12 @@ defmodule Pager.HTMLTest do
     assert Pager.HTML.Helpers.page_class(%{type: :page, states: [:foo, :bar, :baz]}) ==
              "page foo bar baz"
   end
+  
+  setup do
+    [conn: conn(:get, "/foo")]
+  end
 
-  describe "page_link/2" do
-    setup do
-      [conn: conn(:get, "/foo")]
-    end
-
+  describe "page_link/3" do
     test "renders proper page link based of page metadata", %{conn: conn} do
       page = %{type: :page, text: "2", states: [], number: 2}
 
@@ -104,6 +104,23 @@ defmodule Pager.HTMLTest do
 
       assert Pager.HTML.Helpers.page_link(conn, page) ==
                Phoenix.HTML.Link.link("2", to: "?page=2&size=10")
+    end
+    
+    test "renders page link with options", %{conn: conn} do
+      page = %{type: :page, text: "2", states: [], number: 2}
+      opts = [class: "page-link"]
+
+      assert Pager.HTML.Helpers.page_link(conn, page, opts) ==
+               Phoenix.HTML.Link.link("2", Keyword.put(opts, :to, "/foo?page=2"))
+    end
+  end
+  
+  describe "page_link/4" do
+    test "renders page link with text block", %{conn: conn} do
+      page = %{type: :page, text: "2", states: [], number: 2}
+      
+      assert Pager.HTML.Helpers.page_link(conn, page, [], do: "TEXT") ==
+               Phoenix.HTML.Link.link("TEXT", to: "/foo?page=2")
     end
   end
 end

@@ -8,13 +8,20 @@ defmodule Pager.HTML.Helpers do
   Returns the correct page link if the page is in the correct state.
   Pages with `:active`, `:disabled` or with the type `:ellipsis` only render text.
   """
-  def page_link(%Plug.Conn{} = conn, page) do
+  def page_link(%Plug.Conn{} = conn, page, opts \\ []) do
     cond do
       :active in page.states -> page.text
       :disabled in page.states -> page.text
       page.type == :ellipsis -> page.text
-      true -> build_link(conn, page)
+      true -> build_link(conn, page, opts)
     end
+  end
+  
+  @doc """
+  Same as `page_link/3` but accepts a block to be the page text.
+  """
+  def page_link(%Plug.Conn{} = conn, page, opts, do: block) when is_list(opts) do
+    page_link(conn, Map.put(page, :text, block), opts)
   end
 
   @doc """
@@ -23,15 +30,15 @@ defmodule Pager.HTML.Helpers do
   def page_class(%{type: type, states: states}) do
     String.trim("#{type} #{Enum.join(states, " ")}")
   end
-
-  defp build_link(%Plug.Conn{} = conn, %{text: text, number: number}) do
+  
+  defp build_link(%Plug.Conn{} = conn, %{text: text, number: number}, opts) do
     query_string =
       conn
       |> Plug.Conn.fetch_query_params()
       |> Map.get(:query_params)
       |> Map.put("page", number)
       |> Plug.Conn.Query.encode()
-
-    Phoenix.HTML.Link.link(text, to: "#{conn.request_path}?#{query_string}")
+      
+    Phoenix.HTML.Link.link(text, Keyword.put(opts, :to, "#{conn.request_path}?#{query_string}"))
   end
 end
