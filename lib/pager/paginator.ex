@@ -1,7 +1,7 @@
 defmodule Pager.Paginator do
   @moduledoc false
 
-  import Ecto.Query, only: [limit: 2, offset: 2, exclude: 2]
+  import Ecto.Query, only: [limit: 2, offset: 2, exclude: 2, select: 2]
 
   def paginate(query, repo, %Pager.Options{} = opts) do
     %{
@@ -40,10 +40,11 @@ defmodule Pager.Paginator do
         |> exclude(:preload)
         |> exclude(:order_by)
         |> exclude(:select)
-        |> repo.aggregate(:count, prefix: prefix)
+        |> select(count("*"))
+        |> repo.one(prefix: prefix)
       end
-
-    Map.put(map, :total_items, total)
+      
+    Map.put(map, :total_items, total || 0)
   end
 
   defp convert_to_page(%{items: items, total_items: total_items}, page_number, page_size, padding) do

@@ -77,7 +77,7 @@ defmodule Pager.PaginatorTest do
         provider: DummyProvider
       )
 
-    assert %Page{current_page: 2, page_size: 5, items: items, total_items: nil} = page
+    assert %Page{current_page: 2, page_size: 5, items: items, total_items: 0} = page
     assert Enum.count(items) == 5
   end
 
