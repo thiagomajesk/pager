@@ -42,9 +42,10 @@ defmodule Pager.Paginator do
         |> exclude(:select)
         |> select(count("*"))
         |> repo.one(prefix: prefix)
+        || 0
       end
       
-    Map.put(map, :total_items, total || 0)
+    Map.put(map, :total_items, total)
   end
 
   defp convert_to_page(%{items: items, total_items: total_items}, page_number, page_size, padding) do
