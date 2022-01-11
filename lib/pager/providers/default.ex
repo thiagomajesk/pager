@@ -32,8 +32,8 @@ defmodule Pager.Providers.Default do
         Enum.concat([outer_window_left_pages, [ellipsis()]])
       end
 
-    outer_window_right_start = total_pages - outer_window
-    outer_window_right_end = total_pages - 1
+    outer_window_right_start = total_pages - outer_window + 1
+    outer_window_right_end = total_pages
     outer_window_right_range = outer_window_right_start..outer_window_right_end//1
 
     outer_window_right =

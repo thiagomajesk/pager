@@ -67,7 +67,7 @@ defmodule Pager.BlueprintTest do
                _,
                _,
                %{type: :ellipsis},
-               _,
+               %{number: 5},
                %{type: :next},
                %{type: :last}
              ] = blueprint
@@ -83,7 +83,7 @@ defmodule Pager.BlueprintTest do
       assert [
                %{type: :first},
                %{type: :prev},
-               _,
+               %{number: 1},
                %{type: :ellipsis},
                _,
                _,
@@ -123,6 +123,22 @@ defmodule Pager.BlueprintTest do
                _,
                _
              ] = blueprint
+    end
+    
+    test "show the proper amount of pages when there is only 1 page" do
+      blueprint =
+        Pager.Blueprint.explain(%Pager.Page{current_page: 1, total_items: 50, page_size: 50},
+          inner_window: 4,
+          outer_window: 1
+        )
+        
+      assert [
+          %{type: :first},
+          %{type: :prev},
+          %{number: 1},
+          %{type: :next},
+          %{type: :last},
+        ] = blueprint
     end
   end
 
