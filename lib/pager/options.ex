@@ -41,31 +41,21 @@ defmodule Pager.Options do
   defp normalize(opts) do
     (opts || [])
     |> Enum.to_list()
-    |> atomize_keys()
     |> parse_values()
   end
 
-  defp atomize_keys(opts) do
-    Enum.map(opts, fn
-      {k, v} when is_binary(k) ->
-        {String.to_existing_atom(k), v}
-
-      {k, v} ->
-        {k, v}
-    end)
-  end
-
-  # Accepts both standard keys and aliases
+  # Accepts both standard keys and aliases.
+  # We should also accept keys as strings.
   defp parse_values(opts) do
     Enum.map(opts, fn
-      {k, v} when k in [:page_number, :page] ->
-        {:page_number, parse_option(k, v)}
+      {k, v} when k in [:page_number, :page, :p, "page_number", "page", "p"] ->
+        {:page_number, parse_option(maybe_atomize(k), v)}
 
-      {k, v} when k in [:page_size, :size] ->
-        {:page_size, parse_option(k, v)}
+      {k, v} when k in [:page_size, :size, :s, "page_size", "size", "s"] ->
+        {:page_size, parse_option(maybe_atomize(k), v)}
 
-      {k, v} when k in [:padding, :skip] ->
-        {:padding, parse_option(k, v)}
+      {k, v} when k in [:padding, :offset, :skip, "padding", "offset", "skip"] ->
+        {:padding, parse_option(maybe_atomize(k), v)}
 
       kv ->
         kv
@@ -82,4 +72,7 @@ defmodule Pager.Options do
 
   defp parse_option(key, value),
     do: raise("Invalid value for option #{inspect(key)}. Received #{inspect(value)}")
+
+  defp maybe_atomize(term) when is_atom(term), do: term
+  defp maybe_atomize(term) when is_binary(term), do: String.to_existing_atom(term)
 end

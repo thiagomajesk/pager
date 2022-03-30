@@ -28,4 +28,9 @@ defmodule Pager.OptionsTest do
     assert %Pager.Options{page_size: 5, page_number: 2} =
       Pager.Options.from(page_size: 5, page_number: 2)
   end
+
+  test "from/1 casts only valid options" do
+    assert %Pager.Options{page_size: 5, page_number: 2} =
+      Pager.Options.from(%{"page_size" => 5, "page_number" => 2, "something_else" => 10})
+  end
 end
