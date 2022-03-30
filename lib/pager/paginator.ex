@@ -41,10 +41,10 @@ defmodule Pager.Paginator do
         |> exclude(:order_by)
         |> subquery()
         |> select(count("*"))
-        |> repo.one(prefix: prefix)
-        || 0
+        |> repo.one(prefix: prefix) ||
+          0
       end
-      
+
     Map.put(map, :total_items, total)
   end
 

@@ -34,11 +34,17 @@ defmodule Pager.PageTest do
     assert Page.out_of_range?(%Page{current_page: 1, page_size: 5, items: []}) == true
     assert Page.out_of_range?(%Page{current_page: 1, page_size: 5, items: []}) == true
 
-    assert Page.out_of_range?(%Page{current_page: 1, total_items: 15, page_size: 5, items: nil}) == false
-    assert Page.out_of_range?(%Page{current_page: 4, total_items: 15, page_size: 5, items: nil}) == true
+    assert Page.out_of_range?(%Page{current_page: 1, total_items: 15, page_size: 5, items: nil}) ==
+             false
 
-    assert Page.out_of_range?(%Page{current_page: 1, total_items: 15, page_size: 5, items: [%{}]}) == false
-    assert Page.out_of_range?(%Page{current_page: 4, total_items: 15, page_size: 5, items: [%{}]}) == true
+    assert Page.out_of_range?(%Page{current_page: 4, total_items: 15, page_size: 5, items: nil}) ==
+             true
+
+    assert Page.out_of_range?(%Page{current_page: 1, total_items: 15, page_size: 5, items: [%{}]}) ==
+             false
+
+    assert Page.out_of_range?(%Page{current_page: 4, total_items: 15, page_size: 5, items: [%{}]}) ==
+             true
   end
 
   test "next_page/1 returns the current page + 1" do

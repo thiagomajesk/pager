@@ -6,7 +6,7 @@ defmodule Pager.HTMLTest do
     assert Pager.HTML.Helpers.page_class(%{type: :page, states: [:foo, :bar, :baz]}) ==
              "page foo bar baz"
   end
-  
+
   setup do
     [conn: conn(:get, "/foo")]
   end
@@ -23,21 +23,21 @@ defmodule Pager.HTMLTest do
       page = %{type: :ellipsis, text: "...", states: [], number: nil}
 
       assert Pager.HTML.Helpers.page_link(conn, page) ==
-              Phoenix.HTML.Tag.content_tag(:span, "...")
+               Phoenix.HTML.Tag.content_tag(:span, "...")
     end
 
     test "active pages should have empty links", %{conn: conn} do
       page = %{type: :page, text: "2", states: [:active], number: 2}
 
       assert Pager.HTML.Helpers.page_link(conn, page) ==
-                Phoenix.HTML.Tag.content_tag(:span, "2")
+               Phoenix.HTML.Tag.content_tag(:span, "2")
     end
 
     test "disabled pages should have empty links", %{conn: conn} do
       page = %{type: :page, text: "2", states: [:disabled], number: 2}
 
       assert Pager.HTML.Helpers.page_link(conn, page) ==
-                Phoenix.HTML.Tag.content_tag(:span, "2")
+               Phoenix.HTML.Tag.content_tag(:span, "2")
     end
 
     test "renders prev link when page exists", %{conn: conn} do
@@ -108,7 +108,7 @@ defmodule Pager.HTMLTest do
       assert Pager.HTML.Helpers.page_link(conn, page) ==
                Phoenix.HTML.Link.link("2", to: "?page=2&size=10")
     end
-    
+
     test "renders page link with options", %{conn: conn} do
       page = %{type: :page, text: "2", states: [], number: 2}
       opts = [class: "page-link"]
@@ -117,11 +117,11 @@ defmodule Pager.HTMLTest do
                Phoenix.HTML.Link.link("2", Keyword.put(opts, :to, "/foo?page=2"))
     end
   end
-  
+
   describe "page_link/4" do
     test "renders page link with text block", %{conn: conn} do
       page = %{type: :page, text: "2", states: [], number: 2}
-      
+
       assert Pager.HTML.Helpers.page_link(conn, page, [], do: "TEXT") ==
                Phoenix.HTML.Link.link("TEXT", to: "/foo?page=2")
     end

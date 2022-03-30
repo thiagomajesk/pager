@@ -43,7 +43,9 @@ defmodule Pager.PaginatorTest do
   end
 
   test "should not touch other params other than the relevant opts" do
-    page = Repo.paginate(from(u in User), %{"page_number" => "2", "page_size" => "5", "foo" => false})
+    page =
+      Repo.paginate(from(u in User), %{"page_number" => "2", "page_size" => "5", "foo" => false})
+
     assert %Page{current_page: 2, page_size: 5, items: items} = page
     assert Enum.count(items) == 5
   end

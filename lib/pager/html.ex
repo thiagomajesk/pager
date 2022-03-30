@@ -31,7 +31,12 @@ defmodule Pager.HTML do
   Relies solely on `Pager.Page.prev_page/1` to determine the previous page without checking for bounds or the blueprint.
   """
   def prev_page_link(%Plug.Conn{} = conn, %Pager.Page{} = page) do
-    Pager.HTML.Helpers.page_link(conn, %{type: :prev, text: "‹ Prev", number: Pager.Page.prev_page(page), states: []})
+    Pager.HTML.Helpers.page_link(conn, %{
+      type: :prev,
+      text: "‹ Prev",
+      number: Pager.Page.prev_page(page),
+      states: []
+    })
   end
 
   @doc """
@@ -52,7 +57,12 @@ defmodule Pager.HTML do
   Relies solely on `Pager.Page.next_page/1` to determine the next page without checking for bounds or the blueprint.
   """
   def next_page_link(%Plug.Conn{} = conn, %Pager.Page{} = page) do
-    Pager.HTML.Helpers.page_link(conn, %{type: :next, text: "Next ›", number: Pager.Page.next_page(page), states: []})
+    Pager.HTML.Helpers.page_link(conn, %{
+      type: :next,
+      text: "Next ›",
+      number: Pager.Page.next_page(page),
+      states: []
+    })
   end
 
   @doc """
