@@ -20,12 +20,12 @@ defmodule Pager.OptionsTest do
   end
 
   test "from/1 parse options from map" do
-    %Pager.Options{page_size: 5, page_number: 2} =
+    assert %Pager.Options{page_size: 5, page_number: 2} =
       Pager.Options.from(%{"page_size" => 5, "page_number" => 2})
   end
 
   test "from/1 parse options from list" do
-    %Pager.Options{page_size: 5, page_number: 2} =
-      Pager.Options.from([page_size: 5, page_number: 2])
+    assert %Pager.Options{page_size: 5, page_number: 2} =
+      Pager.Options.from(page_size: 5, page_number: 2)
   end
 end
