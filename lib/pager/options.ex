@@ -42,6 +42,7 @@ defmodule Pager.Options do
     (opts || [])
     |> Enum.to_list()
     |> parse_values()
+    |> Enum.reject(&is_nil/1)
   end
 
   # Accepts both standard keys and aliases.
@@ -56,9 +57,12 @@ defmodule Pager.Options do
 
       {k, v} when k in [:padding, :offset, :skip, "padding", "offset", "skip"] ->
         {:padding, parse_option(maybe_atomize(k), v)}
+        
+      {k, v} when k in [:provider, :prefix, :without_count] ->
+        {k, v}
 
-      kv ->
-        kv
+      _kv ->
+        nil
     end)
   end
 
