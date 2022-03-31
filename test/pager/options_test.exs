@@ -18,6 +18,11 @@ defmodule Pager.OptionsTest do
       Pager.Options.merge([page_size: -1], [])
     end
   end
+  
+  test "merge/2 casts only valid options" do
+    assert %Pager.Options{page_size: 5, page_number: 2} =
+             Pager.Options.merge(%{"page_size" => 5, "page_number" => 2}, %{"something_else" => 10})
+  end
 
   test "from/1 parse options from map" do
     assert %Pager.Options{page_size: 5, page_number: 2} =
